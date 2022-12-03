@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1057085230830",
+    "firebase_url": "https://caribbean-war-default-rtdb.firebaseio.com",
+    "project_id": "caribbean-war",
+    "storage_bucket": "caribbean-war.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1057085230830:android:eae402e7e266d40b87adff",
+        "android_client_info": {
+          "package_name": "com.softparadox.caribbeanwar"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1057085230830-06vhvuhsjv345ba81l2c9735qrj0cepe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAI4alMBYORk9BKERuIT8RbAmLHqfoW3u8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1057085230830-06vhvuhsjv345ba81l2c9735qrj0cepe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
