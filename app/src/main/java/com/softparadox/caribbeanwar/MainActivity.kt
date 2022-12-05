@@ -10,19 +10,24 @@ import android.view.WindowManager
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import com.bumptech.glide.Glide
-import org.w3c.dom.Text
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
     private lateinit var logoImage: ImageView
     private lateinit var playButton: Button
     private lateinit var rankingButton: Button
     private lateinit var accountButton: Button
+    private lateinit var logoutButton: Button
     private lateinit var signText: TextView
     private lateinit var loginButton: Button
     private lateinit var usernameView: TextView
     private lateinit var usernameEdit: EditText
     private lateinit var emailEdit: EditText
     private lateinit var passwordEdit: EditText
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,9 +37,12 @@ class MainActivity : AppCompatActivity() {
         playButton = findViewById(R.id.play_button)
         rankingButton = findViewById(R.id.ranking_button)
         accountButton = findViewById(R.id.account_button)
+        logoutButton = findViewById(R.id.logout_button)
+
+        auth = Firebase.auth
+        updateUI(auth.currentUser)
 
         Glide.with(this).load(R.drawable.logo).into(logoImage)
-
 
         playButton.setOnClickListener {
             startActivity(Intent(this, GameActivity::class.java))
@@ -42,6 +50,11 @@ class MainActivity : AppCompatActivity() {
 
         rankingButton.setOnClickListener {
             startActivity(Intent(this, RankingActivity::class.java))
+        }
+
+        logoutButton.setOnClickListener {
+            Firebase.auth.signOut()
+            updateUI(null)
         }
 
         accountButton.setOnClickListener {
@@ -81,16 +94,46 @@ class MainActivity : AppCompatActivity() {
             }
 
             loginButton.setOnClickListener {
-                if (
-                    emailEdit.text.isBlank() ||
-                    passwordEdit.text.isBlank() ||
-                    (isCreatingAccount && usernameEdit.text.isBlank())
-                ) {
+                val username = usernameEdit.text.trim().toString()
+                val email = emailEdit.text.trim().toString()
+                val password = emailEdit.text.toString()
+
+                if (email.isBlank() || password.isBlank() || isCreatingAccount && username.isBlank()) {
                     Toast.makeText(this, "There are empty fields", Toast.LENGTH_SHORT).show()
                 } else {
-                    Toast.makeText(this, emailEdit.text.trim(), Toast.LENGTH_SHORT).show()
+                    if (isCreatingAccount) {
+                        auth.createUserWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(this) { task ->
+                                if (task.isSuccessful) {
+                                    updateUI(auth.currentUser)
+                                    dialog.dismiss()
+                                } else {
+                                    updateUI(null)
+                                }
+                            }
+                    } else {
+                        auth.signInWithEmailAndPassword(email, password)
+                            .addOnCompleteListener(this) { task ->
+                                if (task.isSuccessful) {
+                                    updateUI(auth.currentUser)
+                                    dialog.dismiss()
+                                } else {
+                                    updateUI(null)
+                                }
+                            }
+                    }
                 }
             }
+        }
+    }
+
+    private fun updateUI(user: FirebaseUser?) {
+        if (user != null) {
+            accountButton.visibility = View.GONE
+            logoutButton.visibility = View.VISIBLE
+        } else {
+            accountButton.visibility = View.VISIBLE
+            logoutButton.visibility = View.GONE
         }
     }
 }
