@@ -13,6 +13,11 @@ import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.ktx.auth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.ValueEventListener
+import com.google.firebase.database.ktx.database
+import com.google.firebase.database.ktx.getValue
 import com.google.firebase.ktx.Firebase
 
 class MainActivity : AppCompatActivity() {
@@ -25,6 +30,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var loginButton: Button
     private lateinit var usernameView: TextView
     private lateinit var usernameEdit: EditText
+    private lateinit var usernameText: TextView
     private lateinit var emailEdit: EditText
     private lateinit var passwordEdit: EditText
     private lateinit var auth: FirebaseAuth
@@ -38,6 +44,7 @@ class MainActivity : AppCompatActivity() {
         rankingButton = findViewById(R.id.ranking_button)
         accountButton = findViewById(R.id.account_button)
         logoutButton = findViewById(R.id.logout_button)
+        usernameText = findViewById(R.id.username_text)
 
         auth = Firebase.auth
         updateUI(auth.currentUser)
@@ -45,7 +52,7 @@ class MainActivity : AppCompatActivity() {
         Glide.with(this).load(R.drawable.logo).into(logoImage)
 
         playButton.setOnClickListener {
-            startActivity(Intent(this, GameActivity::class.java))
+            startActivity(Intent(this, MatchActivity::class.java))
         }
 
         rankingButton.setOnClickListener {
@@ -105,7 +112,17 @@ class MainActivity : AppCompatActivity() {
                         auth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(this) { task ->
                                 if (task.isSuccessful) {
-                                    updateUI(auth.currentUser)
+                                    val currentUser = auth.currentUser
+                                    currentUser?.let { it ->
+                                        User(
+                                            it.uid,
+                                            email,
+                                            username,
+                                            "Unranked",
+                                            0
+                                        )
+                                    }?.create()
+                                    updateUI(currentUser)
                                     dialog.dismiss()
                                 } else {
                                     updateUI(null)
@@ -131,9 +148,22 @@ class MainActivity : AppCompatActivity() {
         if (user != null) {
             accountButton.visibility = View.GONE
             logoutButton.visibility = View.VISIBLE
+            usernameText.visibility = View.VISIBLE
+
+            val database = Firebase.database
+            val myRef = database.getReference("users/${user.uid}")
+            myRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val username = snapshot.child("username").getValue(String::class.java)
+                    usernameText.text = username
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
         } else {
             accountButton.visibility = View.VISIBLE
             logoutButton.visibility = View.GONE
+            usernameText.visibility = View.GONE
         }
     }
 }
