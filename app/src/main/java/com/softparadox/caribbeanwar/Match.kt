@@ -8,7 +8,8 @@ data class Match(
     val username: String,
     val rank: String,
     val points: Int,
-    val date: Long = System.currentTimeMillis()
+    val date: Long = System.currentTimeMillis(),
+    var available: Boolean = false
 ) {
     fun create() {
         val database = Firebase.database

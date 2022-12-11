@@ -19,75 +19,62 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.childEvents
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
-import java.lang.Math.abs
-import java.time.LocalDateTime
-import java.util.Date
 
 class MatchActivity : AppCompatActivity() {
+    private lateinit var refFetching: DatabaseReference
     private lateinit var refSearching: DatabaseReference
-    private lateinit var refSelecting: DatabaseReference
-    private lateinit var refMessage: DatabaseReference
+    private lateinit var refInvitation: DatabaseReference
+    private lateinit var listenerFetching: ValueEventListener
     private lateinit var listenerSearching: ValueEventListener
-    private lateinit var listenerSelecting: ValueEventListener
+    private lateinit var listenerInvitation: ValueEventListener
     private lateinit var authUser: FirebaseUser
     private lateinit var currentUser: Match
     private lateinit var currentOpponent: Match
-    private lateinit var userFoundText: TextView
-    private lateinit var cancelButton: Button
-    private lateinit var acceptButton: Button
-    private lateinit var searchingText: TextView
-    private lateinit var mainHandler: Handler
-    private lateinit var updateTextTask: Runnable
     private lateinit var database: FirebaseDatabase
     private lateinit var dialogFind: Dialog
-
-    //    Status: [waiting, searching, paired, userReading, finished]
-    private var status = "waiting"
+    private var fetching = true
+    private var opponentAcceptMatch = false
+    private var userAcceptMatch = false
     private var lastUidMatched = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_match)
 
-        // INIT VARIABLES
         database = Firebase.database
         authUser = Firebase.auth.currentUser!!
-        mainHandler = Handler(Looper.getMainLooper())
         lastUidMatched = authUser.uid
         setCurrentUser()
-        // To show searching page
-        searchingText = findViewById(R.id.searching_text)
-        var dots = 0
-        updateTextTask = object : Runnable {
-            override fun run() {
-                var text = "Searching"
-                for (i in 1..dots) {
-                    text += "."
+        setSearchingTex()
+
+        onReceiveInvitation {
+            when (it) {
+                "accept" -> {
+                    if (userAcceptMatch) goToGame()
+                    else opponentAcceptMatch = true
                 }
-                dots = if (dots >= 3) 0 else dots + 1
-                searchingText.text = text
-                mainHandler.postDelayed(this, 400)
+                "cancel" -> {
+                    Toast.makeText(
+                        this,
+                        "The opponent canceled the match, you went back to search",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    cancelGame()
+                }
+                else -> {
+                    if (currentUser.available) {
+                        setAvailability(false)
+                        showOpponent(it!!)
+                    } else {
+                        sendInvitation(it!!, "cancel")
+                    }
+                }
             }
         }
 
-        onReceiveMessage("invited") {
-            stopSearchingOpponent("paired")
-            setCurrentOpponent(it!!) {
-                showOpponent()
-            }
-        }
-
-        onReceiveMessage("cancel") {
-            stopSearchingOpponent("userReading")
-            dialogFind.dismiss()
-            // TODO(Add new dialog you have been cancelled)
-            Toast.makeText(this, "El jugador canceló la partida", Toast.LENGTH_SHORT).show()
-            startSearchingOpponent()
-        }
-
+        // LISTO: Invita a todos los usuarios que vayan entrando
         refSearching = database.getReference("matching")
         listenerSearching = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -106,38 +93,51 @@ class MatchActivity : AppCompatActivity() {
                     val matchScore = pointScore + dateScore
 
                     if (matchScore > 100) {
-                        inviteToPlay(opponentUid, matchScore)
+                        Invitation(currentUser.uid, matchScore).invite(opponentUid)
                     }
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {}
         }
+        startSearchingOpponent()
 
-//        Ya te llegaron las invitaciones
-        refSelecting = database.getReference("matching/${authUser.uid}/invitations")
-        listenerSelecting = object : ValueEventListener {
+        // LISTO: Espera n segundos a que lleguen las invitaciones de los que ya están en la lista
+        //        de match y selecciona el que tenga el puntaje más alto
+        refFetching = database.getReference("matching/${authUser.uid}/invitations")
+        listenerFetching = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.hasChildren()) {
                     val opponentUid =
                         snapshot.children.elementAt(0).child("uid").getValue(String::class.java)!!
-                    setCurrentOpponent(opponentUid) {
-                        //TODO: Agregar que cancele la busqueda y que se espere a que lleguen todos y lo haga de golpe
-                        sendMessage(opponentUid, "invited", currentUser.uid)
-                        showOpponent()
-                    }
+                    sendMessageOrDelete(opponentUid)
+                } else {
+                    fetching = false
+                    refFetching.removeEventListener(listenerFetching)
+                    setAvailability(true)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {}
         }
-        refSelecting.orderByChild("matchScore").limitToLast(1)
-            .addValueEventListener(listenerSelecting)
 
-        startSearchingOpponent()
+        Handler(Looper.getMainLooper()).postDelayed({
+            refFetching.orderByChild("matchScore").limitToLast(1)
+                .addValueEventListener(listenerFetching)
+        }, 1500)
     }
 
-    fun setCurrentUser() {
+    override fun onDestroy() {
+        super.onDestroy()
+        if (fetching) {
+            refFetching.removeEventListener(listenerFetching)
+        }
+        stopSearchingOpponent()
+        refInvitation.removeEventListener(listenerInvitation)
+        removeInDB("matching/${authUser.uid}")
+    }
+
+    private fun setCurrentUser() {
         database.getReference("users/${authUser.uid}")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -152,7 +152,7 @@ class MatchActivity : AppCompatActivity() {
             })
     }
 
-    fun setCurrentOpponent(uid: String, funcion: () -> Unit) {
+    private fun setCurrentOpponent(uid: String, funcion: () -> Unit) {
         database.getReference("matching/$uid")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -176,50 +176,31 @@ class MatchActivity : AppCompatActivity() {
             })
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-//        TODO: Remove all listeners from myrefmessage
-        removeFromMatch()
-        stopSearchingOpponent("finished")
+    private fun sendMessageOrDelete(uid: String) {
+        ifUserIsAvailable(uid,
+            {
+                sendInvitation(uid, currentUser.uid)
+                showOpponent(uid)
+            },
+            {
+                removeInDB("matching/${authUser.uid}/invitations/$uid")
+            })
     }
 
-    fun startSearchingOpponent() {
-        status = "searching"
-        mainHandler.post(updateTextTask)
+    private fun startSearchingOpponent() {
         refSearching.orderByChild("date").limitToLast(1)
             .addValueEventListener(listenerSearching)
     }
 
-    fun stopSearchingOpponent(withStatus: String) {
-        status = withStatus
-        mainHandler.removeCallbacks(updateTextTask)
+    private fun stopSearchingOpponent() {
         refSearching.removeEventListener(listenerSearching)
     }
 
-    fun inviteToPlay(uid: String, matchScore: Long) {
-        status = "paired"
-        Invitation(currentUser.uid, matchScore).invite(uid)
-        Toast.makeText(this, "Has invitado a ${uid} :)", Toast.LENGTH_SHORT)
-            .show()
-    }
-
-    fun removeInvitations() {
-        // Borrar?
-        removeInDB("matching/${authUser.uid}/invitations")
-        removeInDB("matching/${currentOpponent.uid}/invitations")
-    }
-
-    fun addToMatch(match: Match) {
-        status = "searching"
+    private fun addToMatch(match: Match) {
         match.create()
     }
 
-    fun removeFromMatch() {
-        status = "finished"
-        removeInDB("matching/${authUser.uid}")
-    }
-
-    fun showOpponent() {
+    private fun showOpponent(uid: String) {
         dialogFind = Dialog(this)
         dialogFind.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -231,45 +212,62 @@ class MatchActivity : AppCompatActivity() {
         dialogFind.window?.attributes?.windowAnimations = android.R.style.Animation_Dialog
         dialogFind.setContentView(R.layout.layout_found)
 
-        cancelButton = dialogFind.window?.findViewById(R.id.cancel_game_button)!!
-        acceptButton = dialogFind.window?.findViewById(R.id.accept_game_button)!!
-        userFoundText = dialogFind.window?.findViewById(R.id.user_found_text)!!
-        userFoundText.text = "username: ${currentOpponent.username}\nrank: ${currentOpponent.rank}"
-
-        cancelButton.setOnClickListener {
-            sendMessage(currentOpponent.uid, "cancel", currentOpponent.uid)
-            removeInvitations()
-            startSearchingOpponent()
-            status = "searching"
-            dialogFind.dismiss()
+        setCurrentOpponent(uid) {
+            val text = "username: ${currentOpponent.username}\nrank: ${currentOpponent.rank}"
+            dialogFind.window?.findViewById<TextView>(R.id.user_found_text)!!.text = text
         }
 
-        acceptButton.setOnClickListener {
-            this.finish()
-            startActivity(Intent(this, GameActivity::class.java))
+        dialogFind.window?.findViewById<Button>(R.id.cancel_game_button)!!.setOnClickListener {
+            sendInvitation(currentOpponent.uid, "cancel")
+            cancelGame()
+        }
+
+        dialogFind.window?.findViewById<Button>(R.id.accept_game_button)!!.setOnClickListener {
+            userAcceptMatch = true
+            sendInvitation(currentOpponent.uid, "accept")
+            if (opponentAcceptMatch) goToGame()
         }
 
         dialogFind.show()
     }
 
-    fun onReceiveMessage(key: String, funcion: (String?) -> Unit) {
-        refMessage = database.getReference("matching/${authUser.uid}/$key")
-        val listenerMessage = object : ValueEventListener {
+    private fun onReceiveInvitation(funcion: (String?) -> Unit) {
+        refInvitation = database.getReference("matching/${authUser.uid}/invitation")
+        listenerInvitation = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val info = snapshot.getValue(String::class.java)
                 if (info != null) {
-                    removeInDB("matching/${authUser.uid}/$key")
+                    removeInDB("matching/${authUser.uid}/invitation")
                     funcion(info)
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {}
         }
-        refMessage.addValueEventListener(listenerMessage)
+        refInvitation.addValueEventListener(listenerInvitation)
     }
 
-    fun sendMessage(toUid: String, key: String, msg: String) {
-        saveInDB("matching/$toUid/$key", msg)
+    private fun ifUserIsAvailable(
+        uid: String,
+        isAvailable: () -> Unit,
+        isNotAvailable: () -> Unit
+    ) {
+        database.getReference("matching/$uid/available")
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.getValue(Boolean::class.java) == true) {
+                        isAvailable()
+                    } else {
+                        isNotAvailable()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {}
+            })
+    }
+
+    private fun sendInvitation(toUid: String, status: String) {
+        saveInDB("matching/$toUid/invitation", status)
     }
 
     private fun saveInDB(path: String, value: Any) {
@@ -278,5 +276,40 @@ class MatchActivity : AppCompatActivity() {
 
     private fun removeInDB(path: String) {
         database.getReference(path).removeValue()
+    }
+
+    private fun setAvailability(availability: Boolean) {
+        currentUser.available = availability
+        saveInDB("matching/${currentUser.uid}/available", availability)
+    }
+
+    private fun cancelGame() {
+        userAcceptMatch = false
+        opponentAcceptMatch = false
+        setAvailability(true)
+        dialogFind.dismiss()
+        if (fetching) {
+            removeInDB("matching/${authUser.uid}/invitations/${currentOpponent.uid}")
+        }
+    }
+
+    private fun setSearchingTex() {
+        var dots = 0
+        Handler(Looper.getMainLooper()).post(object : Runnable {
+            override fun run() {
+                var text = "Searching"
+                for (i in 1..dots) {
+                    text += "."
+                }
+                dots = if (dots >= 3) 0 else dots + 1
+                findViewById<TextView>(R.id.searching_text).text = text
+                Handler(Looper.getMainLooper()).postDelayed(this, 400)
+            }
+        })
+    }
+
+    private fun goToGame() {
+        this.finish()
+        startActivity(Intent(this, GameActivity::class.java))
     }
 }
