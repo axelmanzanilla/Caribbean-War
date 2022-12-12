@@ -34,6 +34,8 @@ class MatchActivity : AppCompatActivity() {
     private lateinit var currentOpponent: Match
     private lateinit var database: FirebaseDatabase
     private lateinit var dialogFind: Dialog
+    private lateinit var dialogHandler: Handler
+    private lateinit var dialogRunnable: Runnable
     private var fetching = true
     private var opponentAcceptMatch = false
     private var userAcceptMatch = false
@@ -48,6 +50,7 @@ class MatchActivity : AppCompatActivity() {
         lastUidMatched = authUser.uid
         setCurrentUser()
         setSearchingTex()
+        dialogHandler = Handler(Looper.getMainLooper())
 
         onReceiveInvitation {
             when (it) {
@@ -63,18 +66,21 @@ class MatchActivity : AppCompatActivity() {
                     ).show()
                     cancelGame()
                 }
+                "decline" -> {
+                    cancelShowOpponent()
+                }
                 else -> {
                     if (currentUser.available) {
                         setAvailability(false)
                         showOpponent(it!!)
                     } else {
-                        sendInvitation(it!!, "cancel")
+                        sendInvitation(it!!, "decline")
                     }
                 }
             }
         }
 
-        // LISTO: Invita a todos los usuarios que vayan entrando
+//        Invita a todos los usuarios que vayan entrando
         refSearching = database.getReference("matching")
         listenerSearching = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -102,8 +108,8 @@ class MatchActivity : AppCompatActivity() {
         }
         startSearchingOpponent()
 
-        // LISTO: Espera n segundos a que lleguen las invitaciones de los que ya están en la lista
-        //        de match y selecciona el que tenga el puntaje más alto
+//        Espera n segundos a que lleguen las invitaciones de los que ya están en la lista
+//        de match y selecciona el que tenga el puntaje más alto
         refFetching = database.getReference("matching/${authUser.uid}/invitations")
         listenerFetching = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -124,7 +130,9 @@ class MatchActivity : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             refFetching.orderByChild("matchScore").limitToLast(1)
                 .addValueEventListener(listenerFetching)
-        }, 1500)
+        }, 1000)
+//         Posible bug: Si hay un usuario que mande su invitación después de 1 segundo va a volver
+//         a hacer el proceso haciendo que se desplieguen dos dialogos
     }
 
     override fun onDestroy() {
@@ -201,6 +209,19 @@ class MatchActivity : AppCompatActivity() {
     }
 
     private fun showOpponent(uid: String) {
+        dialogRunnable = (Runnable { showDialog(uid) })
+        dialogHandler.postDelayed(dialogRunnable, 1000)
+    }
+
+    private fun cancelShowOpponent() {
+        dialogHandler.removeCallbacks(dialogRunnable)
+        setAvailability(true)
+        if (fetching) {
+            removeInDB("matching/${authUser.uid}/invitations/${currentOpponent.uid}")
+        }
+    }
+
+    private fun showDialog(uid: String) {
         dialogFind = Dialog(this)
         dialogFind.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
