@@ -37,6 +37,7 @@ class MatchActivity : AppCompatActivity() {
     private lateinit var dialogHandler: Handler
     private lateinit var dialogRunnable: Runnable
     private var fetching = true
+    private var matching = false
     private var opponentAcceptMatch = false
     private var userAcceptMatch = false
     private var lastUidMatched = ""
@@ -45,13 +46,20 @@ class MatchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_match)
 
+//      Inicia las variables globales
         database = Firebase.database
         authUser = Firebase.auth.currentUser!!
         lastUidMatched = authUser.uid
         setCurrentUser()
         setSearchingTex()
         dialogHandler = Handler(Looper.getMainLooper())
+        findViewById<Button>(R.id.cancel_searching).setOnClickListener {
+            finish()
+        }
 
+//      Comportamiento al recibir un mensaje de invitación, si es aceptado se va a la pantalla de
+//      juego, si es cancelado regresa a buscar oponentes y muestra un mensaje, si es declinado
+//      solo regresa a buscar oponentes
         onReceiveInvitation {
             when (it) {
                 "accept" -> {
@@ -80,7 +88,7 @@ class MatchActivity : AppCompatActivity() {
             }
         }
 
-//        Invita a todos los usuarios que vayan entrando
+//      Listener para invitar a todos los usuarios que vayan entrando
         refSearching = database.getReference("matching")
         listenerSearching = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -98,7 +106,7 @@ class MatchActivity : AppCompatActivity() {
                     val dateScore = (opponentDate - currentUser.date) / 1000
                     val matchScore = pointScore + dateScore
 
-                    if (matchScore > 100) {
+                    if (matchScore > 20) {
                         Invitation(currentUser.uid, matchScore).invite(opponentUid)
                     }
                 }
@@ -108,8 +116,8 @@ class MatchActivity : AppCompatActivity() {
         }
         startSearchingOpponent()
 
-//        Espera n segundos a que lleguen las invitaciones de los que ya están en la lista
-//        de match y selecciona el que tenga el puntaje más alto
+//      Espera n segundos a que lleguen las invitaciones de los que ya están en la lista
+//      de match y selecciona el que tenga el puntaje más alto
         refFetching = database.getReference("matching/${authUser.uid}/invitations")
         listenerFetching = object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -140,6 +148,9 @@ class MatchActivity : AppCompatActivity() {
         if (fetching) {
             refFetching.removeEventListener(listenerFetching)
         }
+        if (matching) {
+            sendInvitation(currentOpponent.uid, "decline")
+        }
         stopSearchingOpponent()
         refInvitation.removeEventListener(listenerInvitation)
         removeInDB("matching/${authUser.uid}")
@@ -160,7 +171,7 @@ class MatchActivity : AppCompatActivity() {
             })
     }
 
-    private fun setCurrentOpponent(uid: String, funcion: () -> Unit) {
+    private fun setCurrentOpponent(uid: String) {
         database.getReference("matching/$uid")
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -177,7 +188,6 @@ class MatchActivity : AppCompatActivity() {
                         opponentPoints,
                         opponentDate
                     )
-                    funcion()
                 }
 
                 override fun onCancelled(error: DatabaseError) {}
@@ -209,11 +219,14 @@ class MatchActivity : AppCompatActivity() {
     }
 
     private fun showOpponent(uid: String) {
-        dialogRunnable = (Runnable { showDialog(uid) })
+        matching = true
+        setCurrentOpponent(uid)
+        dialogRunnable = (Runnable { showDialog() })
         dialogHandler.postDelayed(dialogRunnable, 1000)
     }
 
     private fun cancelShowOpponent() {
+        matching = false
         dialogHandler.removeCallbacks(dialogRunnable)
         setAvailability(true)
         if (fetching) {
@@ -221,7 +234,7 @@ class MatchActivity : AppCompatActivity() {
         }
     }
 
-    private fun showDialog(uid: String) {
+    private fun showDialog() {
         dialogFind = Dialog(this)
         dialogFind.window?.setLayout(
             WindowManager.LayoutParams.WRAP_CONTENT,
@@ -233,10 +246,8 @@ class MatchActivity : AppCompatActivity() {
         dialogFind.window?.attributes?.windowAnimations = android.R.style.Animation_Dialog
         dialogFind.setContentView(R.layout.layout_found)
 
-        setCurrentOpponent(uid) {
-            val text = "username: ${currentOpponent.username}\nrank: ${currentOpponent.rank}"
-            dialogFind.window?.findViewById<TextView>(R.id.user_found_text)!!.text = text
-        }
+        val text = "username: ${currentOpponent.username}\nrank: ${currentOpponent.rank}"
+        dialogFind.window?.findViewById<TextView>(R.id.user_found_text)!!.text = text
 
         dialogFind.window?.findViewById<Button>(R.id.cancel_game_button)!!.setOnClickListener {
             sendInvitation(currentOpponent.uid, "cancel")
@@ -305,13 +316,13 @@ class MatchActivity : AppCompatActivity() {
     }
 
     private fun cancelGame() {
+        matching = false
         userAcceptMatch = false
         opponentAcceptMatch = false
         setAvailability(true)
         dialogFind.dismiss()
-        if (fetching) {
+        if (fetching)
             removeInDB("matching/${authUser.uid}/invitations/${currentOpponent.uid}")
-        }
     }
 
     private fun setSearchingTex() {
@@ -330,7 +341,7 @@ class MatchActivity : AppCompatActivity() {
     }
 
     private fun goToGame() {
-        this.finish()
+        finish()
         startActivity(Intent(this, GameActivity::class.java))
     }
 }

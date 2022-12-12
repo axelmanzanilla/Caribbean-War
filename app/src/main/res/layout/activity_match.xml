@@ -6,15 +6,25 @@
     android:layout_height="match_parent"
     android:background="@color/white"
     android:gravity="center"
+    android:orientation="vertical"
     tools:context=".MatchActivity">
 
+    <TextView
+        android:id="@+id/searching_text"
+        android:layout_width="120sp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12sp"
+        android:layout_marginTop="80dp"
+        android:text="Searching..."
+        android:textColor="@color/black"
+        android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/searching_text"
-            android:layout_width="120sp"
-            android:layout_marginStart="40sp"
-            android:layout_height="wrap_content"
-            android:text="Searching"
-            android:textColor="@color/black"
-            android:textSize="20sp" />
+    <Button
+        android:id="@+id/cancel_searching"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="60dp"
+        android:backgroundTint="#d33"
+        android:text="Cancel"
+        android:textColor="@color/black" />
 </LinearLayout>
