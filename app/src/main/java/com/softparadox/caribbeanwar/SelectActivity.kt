@@ -13,6 +13,7 @@ import android.view.ViewGroup
 import android.widget.*
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
@@ -29,11 +30,16 @@ class SelectActivity : AppCompatActivity() {
     private lateinit var shipLarge: ImageView
     private lateinit var board: RelativeLayout
     private lateinit var main: LinearLayout
+    private lateinit var refConfirmation: DatabaseReference
+    private lateinit var listenerConfirmation: ValueEventListener
     private var square = 0
     private var putX = 0f
     private var putY = 0f
     private var gameUid = ""
     private var userUid = ""
+    private var opponentUid = ""
+    private var opponentReady = false
+    private var userReady = false
     private var ships = mutableListOf<Ship>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,15 +60,23 @@ class SelectActivity : AppCompatActivity() {
         setShips()
         gameUid = intent.getStringExtra("gameUid")!!
         userUid = intent.getStringExtra("userUid")!!
+        opponentUid = intent.getStringExtra("opponentUid")!!
 
         findViewById<Button>(R.id.asd_button).setOnClickListener {
             if (ships.filter { s -> s.x == 0 && s.y == 0 }.isNotEmpty()) {
                 Toast.makeText(this, "You must put all your ships", Toast.LENGTH_SHORT).show()
             } else {
-                finish()
-                startActivity(Intent(this, GameActivity::class.java))
-                saveShips()
-                saveWater()
+                Firebase.database.getReference("games/$gameUid/$opponentUid/confirmation")
+                    .setValue("ready")
+                if (opponentReady) goToGame()
+                else {
+                    userReady = true
+                    Toast.makeText(
+                        this,
+                        "Wait for the opponent to set their ships",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
             }
         }
 
@@ -220,6 +234,20 @@ class SelectActivity : AppCompatActivity() {
         }
 
         board.setOnDragListener(dragListener)
+
+        onReceiveConfirmation {
+            when (it) {
+                "ready" -> {
+                    if (userReady) goToGame()
+                    else opponentReady = true
+                }
+            }
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        refConfirmation.removeEventListener(listenerConfirmation)
     }
 
     private fun setShips() {
@@ -324,7 +352,26 @@ class SelectActivity : AppCompatActivity() {
         shipLarge.layoutParams = dragParams
     }
 
+    private fun onReceiveConfirmation(funcion: (String?) -> Unit) {
+        refConfirmation = Firebase.database.getReference("games/$gameUid/$userUid/confirmation")
+        listenerConfirmation = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val info = snapshot.getValue(String::class.java)
+                if (info != null) {
+                    Firebase.database.getReference("games/$gameUid/$userUid/confirmation")
+                        .removeValue()
+                    funcion(info)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {}
+        }
+        refConfirmation.addValueEventListener(listenerConfirmation)
+    }
+
     private fun saveShips() {
+        Firebase.database.getReference("games/$gameUid").removeValue()
+
         for (ship in ships) {
             var i = 0
             while (i < ship.size) {
@@ -332,18 +379,18 @@ class SelectActivity : AppCompatActivity() {
                 val row = ship.y + 64 + i * coseno(ship.angle)
                 val column = ship.x + i * seno(ship.angle)
                 val id = ship.uid
-                val rotation = ship.angle.toString()
+                val rotation = ship.angle
                 val status = if (i == 0) {
-                    if (rotation == "0") "ship_top" else "ship_bottom"
+                    if (rotation == 0) "ship_top" else "ship_bottom"
                 } else if (i == ship.size - 1) {
-                    if (rotation == "0") "ship_bottom" else "ship_top"
+                    if (rotation == 0) "ship_bottom" else "ship_top"
                 } else {
                     "ship_middle"
                 }
                 key += row.toInt().toChar()
                 key += column.toInt()
                 i++
-                Firebase.database.getReference("games/$gameUid/$userUid/$key")
+                Firebase.database.getReference("games/$gameUid/$userUid/board/$key")
                     .setValue(Frame(id, status, rotation))
             }
         }
@@ -353,11 +400,11 @@ class SelectActivity : AppCompatActivity() {
         for (i in 65..72) {
             for (column in 1..8) {
                 val key = "${i.toChar()}$column"
-                val reference = Firebase.database.getReference("games/$gameUid/$userUid/$key")
+                val reference = Firebase.database.getReference("games/$gameUid/$userUid/board/$key")
                 reference.addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         if (!snapshot.exists()) {
-                            reference.setValue(Frame("water", "water", "0"))
+                            reference.setValue(Frame("water", "water", 0))
                         }
                     }
 
@@ -365,6 +412,17 @@ class SelectActivity : AppCompatActivity() {
                 })
             }
         }
+    }
+
+    private fun goToGame() {
+        saveShips()
+        saveWater()
+        finish()
+        intent = Intent(this, GameActivity::class.java)
+        intent.putExtra("gameUid", gameUid)
+        intent.putExtra("userUid", userUid)
+        intent.putExtra("opponentUid", opponentUid)
+        startActivity(intent)
     }
 }
 

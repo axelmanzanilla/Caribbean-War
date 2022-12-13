@@ -51,13 +51,11 @@ class MainActivity : AppCompatActivity() {
         Glide.with(this).load(R.drawable.logo).into(logoImage)
 
         playButton.setOnClickListener {
-//             For development purposes
             if (Firebase.auth.currentUser != null) {
                 startActivity(Intent(this, MatchActivity::class.java))
             } else {
                 Toast.makeText(this, "Login first", Toast.LENGTH_SHORT).show()
             }
-//            startActivity(Intent(this, SelectActivity::class.java))
         }
 
         rankingButton.setOnClickListener {

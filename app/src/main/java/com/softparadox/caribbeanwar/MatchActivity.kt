@@ -258,6 +258,11 @@ class MatchActivity : AppCompatActivity() {
             userAcceptMatch = true
             sendInvitation(currentOpponent.uid, "accept")
             if (opponentAcceptMatch) goToGame()
+            else Toast.makeText(
+                this,
+                "Wait for the other player to confirm the game",
+                Toast.LENGTH_SHORT
+            ).show()
         }
 
         dialogFind.show()
@@ -344,10 +349,13 @@ class MatchActivity : AppCompatActivity() {
         val ids = listOf(currentOpponent.uid, currentUser.uid)
         val idsSorted = ids.sorted()
         val gameUid = idsSorted[0].substring(0, 13) + idsSorted[1].substring(0, 13)
-        finish()
+        val uidStartFirst = ids[(0..1).random()]
+        saveInDB("games/$gameUid/turn", uidStartFirst)
         val intent = Intent(this, SelectActivity::class.java)
         intent.putExtra("gameUid", gameUid)
         intent.putExtra("userUid", currentUser.uid)
+        intent.putExtra("opponentUid", currentOpponent.uid)
+        finish()
         startActivity(intent)
     }
 }
