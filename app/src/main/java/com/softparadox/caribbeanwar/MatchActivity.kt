@@ -341,7 +341,13 @@ class MatchActivity : AppCompatActivity() {
     }
 
     private fun goToGame() {
+        val ids = listOf(currentOpponent.uid, currentUser.uid)
+        val idsSorted = ids.sorted()
+        val gameUid = idsSorted[0].substring(0, 13) + idsSorted[1].substring(0, 13)
         finish()
-        startActivity(Intent(this, GameActivity::class.java))
+        val intent = Intent(this, SelectActivity::class.java)
+        intent.putExtra("gameUid", gameUid)
+        intent.putExtra("userUid", currentUser.uid)
+        startActivity(intent)
     }
 }

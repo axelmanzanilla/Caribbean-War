@@ -2,90 +2,1045 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/game_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center|top"
     android:orientation="vertical"
-    android:paddingTop="20dp"
     tools:context=".GameActivity">
 
-    <RelativeLayout
-        android:id="@+id/board"
-        android:layout_width="256dp"
-        android:layout_height="256dp"
-        android:background="@drawable/board" />
-
-    <LinearLayout
-        android:id="@+id/main"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:gravity="center|bottom">
-
-        <ImageView
-            android:id="@+id/ship_large"
-            android:layout_width="32dp"
-            android:layout_height="128dp"
-            android:src="@drawable/ship_large"
-            android:tag="ship_large_1" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/ship_medium_2"
-            android:layout_width="32dp"
-            android:layout_height="96dp"
-            android:src="@drawable/ship_medium"
-            android:tag="ship_medium_2" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/ship_medium_1"
-            android:layout_width="32dp"
-            android:layout_height="96dp"
-            android:src="@drawable/ship_medium"
-            android:tag="ship_medium_1" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/ship_small_2"
-            android:layout_width="32dp"
-            android:layout_height="64dp"
-            android:src="@drawable/ship_small"
-            android:tag="ship_small_2" />
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="match_parent" />
-
-        <ImageView
-            android:id="@+id/ship_small_1"
-            android:layout_width="32dp"
-            android:layout_height="64dp"
-            android:src="@drawable/ship_small"
-            android:tag="ship_small_1" />
-    </LinearLayout>
-
-    <Space
-        android:layout_width="match_parent"
-        android:layout_height="0px"
-        android:layout_weight="1" />
-
-    <Button
-        android:id="@+id/asd_button"
+    <TextView
+        android:id="@+id/status_indicator"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_margin="36dp"
-        android:backgroundTint="#3d3"
-        android:text="Next"
-        android:textColor="@color/black" />
+        android:layout_gravity="center"
+        android:layout_marginTop="8dp"
+        android:text="Your turn"
+        android:textColor="@color/black"
+        android:textSize="28dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/A1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="A1" />
+
+            <ImageButton
+                android:id="@+id/A2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="A2" />
+
+            <ImageButton
+                android:id="@+id/A3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="A3" />
+
+            <ImageButton
+                android:id="@+id/A4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="A4" />
+
+            <ImageButton
+                android:id="@+id/A5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="A5" />
+
+            <ImageButton
+
+                android:id="@+id/A6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="A6" />
+
+            <ImageButton
+                android:id="@+id/A7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="A7" />
+
+            <ImageButton
+                android:id="@+id/A8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="A8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/B1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="B1" />
+
+            <ImageButton
+                android:id="@+id/B2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="B2" />
+
+            <ImageButton
+                android:id="@+id/B3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="B3" />
+
+            <ImageButton
+                android:id="@+id/B4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="B4" />
+
+            <ImageButton
+                android:id="@+id/B5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="B5" />
+
+            <ImageButton
+
+                android:id="@+id/B6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="B6" />
+
+            <ImageButton
+                android:id="@+id/B7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="B7" />
+
+            <ImageButton
+                android:id="@+id/B8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="B8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/C1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="C1" />
+
+            <ImageButton
+                android:id="@+id/C2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="C2" />
+
+            <ImageButton
+                android:id="@+id/C3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="C3" />
+
+            <ImageButton
+                android:id="@+id/C4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="C4" />
+
+            <ImageButton
+                android:id="@+id/C5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="C5" />
+
+            <ImageButton
+
+                android:id="@+id/C6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="C6" />
+
+            <ImageButton
+                android:id="@+id/C7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="C7" />
+
+            <ImageButton
+                android:id="@+id/C8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="C8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/D1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="D1" />
+
+            <ImageButton
+                android:id="@+id/D2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="D2" />
+
+            <ImageButton
+                android:id="@+id/D3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="D3" />
+
+            <ImageButton
+                android:id="@+id/D4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="D4" />
+
+            <ImageButton
+                android:id="@+id/D5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="D5" />
+
+            <ImageButton
+
+                android:id="@+id/D6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="D6" />
+
+            <ImageButton
+                android:id="@+id/D7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="D7" />
+
+            <ImageButton
+                android:id="@+id/D8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="D8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/E1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="E1" />
+
+            <ImageButton
+                android:id="@+id/E2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="E2" />
+
+            <ImageButton
+                android:id="@+id/E3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="E3" />
+
+            <ImageButton
+                android:id="@+id/E4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="E4" />
+
+            <ImageButton
+                android:id="@+id/E5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="E5" />
+
+            <ImageButton
+
+                android:id="@+id/E6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="E6" />
+
+            <ImageButton
+                android:id="@+id/E7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="E7" />
+
+            <ImageButton
+                android:id="@+id/E8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="E8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/F1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="F1" />
+
+            <ImageButton
+                android:id="@+id/F2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="F2" />
+
+            <ImageButton
+                android:id="@+id/F3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="F3" />
+
+            <ImageButton
+                android:id="@+id/F4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="F4" />
+
+            <ImageButton
+                android:id="@+id/F5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="F5" />
+
+            <ImageButton
+
+                android:id="@+id/F6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="F6" />
+
+            <ImageButton
+                android:id="@+id/F7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="F7" />
+
+            <ImageButton
+                android:id="@+id/F8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="F8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/G1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="G1" />
+
+            <ImageButton
+                android:id="@+id/G2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="G2" />
+
+            <ImageButton
+                android:id="@+id/G3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="G3" />
+
+            <ImageButton
+                android:id="@+id/G4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="G4" />
+
+            <ImageButton
+                android:id="@+id/G5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="G5" />
+
+            <ImageButton
+
+                android:id="@+id/G6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="G6" />
+
+            <ImageButton
+                android:id="@+id/G7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="G7" />
+
+            <ImageButton
+                android:id="@+id/G8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="G8" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/H1"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="H1" />
+
+            <ImageButton
+                android:id="@+id/H2"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="H2" />
+
+            <ImageButton
+                android:id="@+id/H3"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="H3" />
+
+            <ImageButton
+                android:id="@+id/H4"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="H4" />
+
+            <ImageButton
+                android:id="@+id/H5"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="H5" />
+
+            <ImageButton
+
+                android:id="@+id/H6"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="H6" />
+
+            <ImageButton
+                android:id="@+id/H7"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="H7" />
+
+            <ImageButton
+                android:id="@+id/H8"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/water"
+                android:tag="H8" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/user_A1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_A1" />
+
+            <ImageButton
+                android:id="@+id/user_A2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_A2" />
+
+            <ImageButton
+                android:id="@+id/user_A3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_A3" />
+
+            <ImageButton
+                android:id="@+id/user_A4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_A4" />
+
+            <ImageButton
+                android:id="@+id/user_A5"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_A5" />
+
+            <ImageButton
+
+                android:id="@+id/user_A6"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_A6" />
+
+            <ImageButton
+                android:id="@+id/user_A7"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_A7" />
+
+            <ImageButton
+                android:id="@+id/user_A8"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_A8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/user_B1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_B1" />
+
+            <ImageButton
+                android:id="@+id/user_B2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_B2" />
+
+            <ImageButton
+                android:id="@+id/user_B3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_B3" />
+
+            <ImageButton
+                android:id="@+id/user_B4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_B4" />
+
+            <ImageButton
+                android:id="@+id/user_B5"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_B5" />
+
+            <ImageButton
+
+                android:id="@+id/user_B6"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_B6" />
+
+            <ImageButton
+                android:id="@+id/user_B7"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_B7" />
+
+            <ImageButton
+                android:id="@+id/user_B8"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_B8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/user_C1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_C1" />
+
+            <ImageButton
+                android:id="@+id/user_C2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_C2" />
+
+            <ImageButton
+                android:id="@+id/user_C3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_C3" />
+
+            <ImageButton
+                android:id="@+id/user_C4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_C4" />
+
+            <ImageButton
+                android:id="@+id/user_C5"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_C5" />
+
+            <ImageButton
+
+                android:id="@+id/user_C6"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_C6" />
+
+            <ImageButton
+                android:id="@+id/user_C7"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_C7" />
+
+            <ImageButton
+                android:id="@+id/user_C8"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_C8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/user_D1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_D1" />
+
+            <ImageButton
+                android:id="@+id/user_D2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_D2" />
+
+            <ImageButton
+                android:id="@+id/user_D3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_D3" />
+
+            <ImageButton
+                android:id="@+id/user_D4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_D4" />
+
+            <ImageButton
+                android:id="@+id/user_D5"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_D5" />
+
+            <ImageButton
+
+                android:id="@+id/user_D6"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_D6" />
+
+            <ImageButton
+                android:id="@+id/user_D7"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_D7" />
+
+            <ImageButton
+                android:id="@+id/user_D8"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_D8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/user_E1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_E1" />
+
+            <ImageButton
+                android:id="@+id/user_E2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_E2" />
+
+            <ImageButton
+                android:id="@+id/user_E3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_E3" />
+
+            <ImageButton
+                android:id="@+id/user_E4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_E4" />
+
+            <ImageButton
+                android:id="@+id/user_E5"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_E5" />
+
+            <ImageButton
+
+                android:id="@+id/user_E6"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_E6" />
+
+            <ImageButton
+                android:id="@+id/user_E7"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_E7" />
+
+            <ImageButton
+                android:id="@+id/user_E8"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_E8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/user_F1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_F1" />
+
+            <ImageButton
+                android:id="@+id/user_F2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_F2" />
+
+            <ImageButton
+                android:id="@+id/user_F3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_F3" />
+
+            <ImageButton
+                android:id="@+id/user_F4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_F4" />
+
+            <ImageButton
+                android:id="@+id/user_F5"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_F5" />
+
+            <ImageButton
+
+                android:id="@+id/user_F6"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_F6" />
+
+            <ImageButton
+                android:id="@+id/user_F7"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_F7" />
+
+            <ImageButton
+                android:id="@+id/user_F8"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_F8" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/user_G1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_G1" />
+
+            <ImageButton
+                android:id="@+id/user_G2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_G2" />
+
+            <ImageButton
+                android:id="@+id/user_G3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_G3" />
+
+            <ImageButton
+                android:id="@+id/user_G4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_G4" />
+
+            <ImageButton
+                android:id="@+id/user_G5"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_G5" />
+
+            <ImageButton
+
+                android:id="@+id/user_G6"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_G6" />
+
+            <ImageButton
+                android:id="@+id/user_G7"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_G7" />
+
+            <ImageButton
+                android:id="@+id/user_G8"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_G8" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/user_H1"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_H1" />
+
+            <ImageButton
+                android:id="@+id/user_H2"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_H2" />
+
+            <ImageButton
+                android:id="@+id/user_H3"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_H3" />
+
+            <ImageButton
+                android:id="@+id/user_H4"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_H4" />
+
+            <ImageButton
+                android:id="@+id/user_H5"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_H5" />
+
+            <ImageButton
+
+                android:id="@+id/user_H6"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_H6" />
+
+            <ImageButton
+                android:id="@+id/user_H7"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_H7" />
+
+            <ImageButton
+                android:id="@+id/user_H8"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:background="@drawable/water"
+                android:tag="user_H8" />
+        </LinearLayout>
+    </LinearLayout>
 </LinearLayout>

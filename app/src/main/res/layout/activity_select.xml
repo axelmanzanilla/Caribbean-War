@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center|top"
+    android:orientation="vertical"
+    android:paddingTop="20dp"
+    tools:context=".SelectActivity">
+
+    <RelativeLayout
+        android:id="@+id/board"
+        android:layout_width="256dp"
+        android:layout_height="256dp"
+        android:background="@drawable/board" />
+
+    <LinearLayout
+        android:id="@+id/main"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:gravity="center|bottom">
+
+        <ImageView
+            android:id="@+id/ship_large"
+            android:layout_width="32dp"
+            android:layout_height="128dp"
+            android:src="@drawable/ship_large"
+            android:tag="ship_large_1" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/ship_medium_2"
+            android:layout_width="32dp"
+            android:layout_height="96dp"
+            android:src="@drawable/ship_medium"
+            android:tag="ship_medium_2" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/ship_medium_1"
+            android:layout_width="32dp"
+            android:layout_height="96dp"
+            android:src="@drawable/ship_medium"
+            android:tag="ship_medium_1" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/ship_small_2"
+            android:layout_width="32dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ship_small"
+            android:tag="ship_small_2" />
+
+        <Space
+            android:layout_width="10dp"
+            android:layout_height="match_parent" />
+
+        <ImageView
+            android:id="@+id/ship_small_1"
+            android:layout_width="32dp"
+            android:layout_height="64dp"
+            android:src="@drawable/ship_small"
+            android:tag="ship_small_1" />
+    </LinearLayout>
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="0px"
+        android:layout_weight="1" />
+
+    <Button
+        android:id="@+id/asd_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:layout_margin="36dp"
+        android:backgroundTint="#3d3"
+        android:text="Next"
+        android:textColor="@color/black" />
+</LinearLayout>
